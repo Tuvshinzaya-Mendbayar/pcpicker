@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-deployment-manager
+  namespace: infra
+  labels:
+    app: svc-deployment-manager
+spec:
+  ports:
+  - port: 80
+    targetPort: 8080
+    name: http
+  selector:
+    app: deployment-manager
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: deployment-manager
+  namespace: infra
+spec:
+  selector:
+    matchLabels:
+      app: deployment-manager
+  serviceName: "svc-deployment-manager"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: deployment-manager
+    spec:
+      terminationGracePeriodSeconds: 10
+      serviceAccountName: gh-runner
+      imagePullSecrets:
+        - name: regcred
+      containers:
+      - name: deploymentmanager
+        image: registry.local/infra/deploymentmanager:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+          name: http
