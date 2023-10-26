@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-demo
+spec:
+  selector:
+    app.kubernetes.io/name: ngixn-demo
+    app.kubernetes.io/version: 1.0.0
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+  type: NodePort
